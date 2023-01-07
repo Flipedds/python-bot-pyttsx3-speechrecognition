@@ -1,9 +1,10 @@
 import speech_recognition as sr
 import pyttsx3
 
-'''instalar pacotes Speech pyttsx3 e pyaudio'''
+'''instalar pacotes SpeechRecognition, pyttsx3 e pyaudio'''
 r = sr.Recognizer()
 engine = pyttsx3.init()
+audio = ''
 
 
 def saudar():
@@ -11,6 +12,13 @@ def saudar():
     engine.say("bem vindo ao primeiro teste")
     engine.runAndWait()
 
+
+def ouvir():
+    with sr.Microphone(device_index=0) as mic:
+        fale_agora()
+        global audio
+        audio = r.listen(mic)
+        return audio
 
 
 def resposta_saudar():
@@ -27,71 +35,64 @@ def pergunta_idade():
 
 def resposta_idade():
     engine.say(f"que legal você tem {idade} anos")
-    engine.say(f"o que você quer saber?")
-    print("como se chama")
-    print("qual o seu número")
-    print("qual a sua idade")
+
+
+def menu():
+    engine.say("o que você quer saber?")
+    engine.say("1 - como me chamo?")
+    engine.say("2 - qual o meu número?")
+    engine.say("3 - qual a minha idade?")
     engine.runAndWait()
 
 
-def assunto(assunto):
-    if assunto == '1':
+def assunto(opcao):
+
+    if opcao == "um" or opcao == "1":
         engine.say("meu nome é lambda")
         engine.runAndWait()
 
-    if assunto == '2':
+    elif opcao == "dois" or opcao == '2':
         engine.say("meu número é 957486578845")
         engine.runAndWait()
 
-    if assunto == '3':
+    elif opcao == "três" or opcao == "3":
         engine.say("nunca se pergunta a idade á uma mulher")
         engine.runAndWait()
 
 
 def fale_agora():
     print("fale agora")
-    return 0
 
 
 def erro():
-    print("erro")
+    engine.say("Não entendi, o que você disse!")
+    engine.runAndWait()
 
 
 saudar()
-with sr.Microphone(device_index=0) as mic:
-    fale_agora()
-    audio = r.listen(mic)
+ouvir()
 try:
     intro = r.recognize_google(audio, language="pt-BR")
     if intro == "Olá":
         resposta_saudar()
-        with sr.Microphone(device_index=1) as mic:
-            fale_agora()
-            audio = r.listen(mic)
+        ouvir()
         try:
             nome = r.recognize_google(audio, language="pt-BR")
             pergunta_idade()
         except:
             erro()
-        with sr.Microphone(device_index=1) as mic:
-            fale_agora()
-            audio = r.listen(mic)
+        ouvir()
         try:
             idade = r.recognize_google(audio, language="pt-BR")
             resposta_idade()
-            with sr.Microphone(device_index=1) as mic:
-                fale_agora()
-                audio = r.listen(mic)
+            menu()
+            ouvir()
             try:
-                assunto = r.recognize_google(audio, language="pt-BR")
-                assunto(assunto)
+                opcao = r.recognize_google(audio, language="pt-BR")
+                assunto(opcao)
             except:
                 erro()
         except:
             erro()
-
-except sr.UnknownValueError:
-    print("não entendi o que você disse")
-
-except sr.RequestError as e:
-    print(f"ocorreu um erro ao chamar o serviço de reconhecimento de voz:{e}")
+except:
+    erro()

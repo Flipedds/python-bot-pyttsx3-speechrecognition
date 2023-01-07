@@ -10,7 +10,7 @@ def saudar():
     engine.say("olá, como vai?")
     engine.say("bem vindo ao primeiro teste")
     engine.runAndWait()
-    return 0
+
 
 
 def resposta_saudar():
